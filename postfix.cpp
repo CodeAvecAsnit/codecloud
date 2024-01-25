@@ -1,7 +1,6 @@
 #include<iostream>
 #include<cstring>
 using namespace std;
-#define max 10;
 
 class datain{
   public :
@@ -16,11 +15,31 @@ class datain{
     this->sount=-1;
   }
 
+
+ void pop(){
+    ++count;
+    scan[count]=opcode[sount-1];
+    opcode[sount-1]=opcode[sount];
+    --sount;
+  }
+
+  void evaluate(){
+    if(opcode[sount-1]=='&'){
+      if(opcode[sount]=='-'||opcode[sount]=='+'||opcode[sount]=='*'||opcode[sount]=='/'){
+        pop();
+      }
+    }
+    else if(opcode[sount-1]=='/'||opcode[sount-1]=='*'){
+      if(opcode[sount]=='+'||opcode[sount]=='-'){
+        pop();
+      }
+    }
+  }
+
   void push(){
     ++count;
     scan[count]=opcode[sount];
     --sount;
-
   }
 
   void getinput(){
@@ -38,22 +57,23 @@ class datain{
       else{
         ++sount;
         opcode[sount]=input[i];
+        if(sount>0){
+          evaluate();
+        }
         if(opcode[sount]==')'){
           sount--;
           while(opcode[sount]!='('){
             push();
           }
           --sount;
-  
         }
       }
     }
    while(sount!=-1){
       push();
       }
-      
-    
   }
+
   void seeopcode(){
     cout<<"The opcodes are :"<<endl;
     for(int i=0;i<=sount;++i){
@@ -67,7 +87,6 @@ class datain{
     }
     cout<<endl;
   }
-
 };
 
 int main(){
@@ -76,5 +95,4 @@ int main(){
   d1.getdifferentdata();
   d1.seescaned();
   return 0;
-
 }
