@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           https://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+<bean class="com.spring.School" name = "school_x">
+    <constructor-arg type="int" value="111"/>
+    <constructor-arg value="UCO"/>
+    <constructor-arg value="OKC"/>
+<!--    <property name="schoolAddress" value="OKC"/>-->
+<!--    <property name="schoolId" value="111"/>-->
+<!--    <property name="schoolName" value="UCO"/>-->
+</bean>
+
+    <bean class="com.spring.Student" name="student1">
+<!--        <property name="age" value="20"/>-->
+<!--        <property name="address" value="USA"/>-->
+<!--        <property name="name" value="Salbe"/>-->
+<!--        <property name="id" value="1"/>-->
+<!--        <property name="list">-->
+<!--            <list>-->
+<!--                <value>10</value>-->
+<!--                <value>11</value>-->
+<!--                <value>19</value>-->
+<!--                <value>210</value>-->
+<!--                <value>910</value>-->
+<!--                <value>109</value>-->
+<!--            </list>-->
+<!--        </property>-->
+<!--        <property name="school" ref="school_x"/>-->
+
+        <constructor-arg type="int" value="1"/>
+        <constructor-arg value="Salbe"/>
+        <constructor-arg type="int" value="20"/>
+        <constructor-arg type="java.lang.String" value="Edmond"/>
+        <constructor-arg type="com.spring.School" ref="school_x"/>
+        <constructor-arg type="java.util.List">
+            <list>
+                <value>Arnunima</value>
+                <value>Global</value>
+                <value>Shankhar dev</value>
+                <value>UCO</value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+</beans>
