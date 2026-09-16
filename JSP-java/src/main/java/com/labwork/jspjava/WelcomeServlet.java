@@ -25,7 +25,7 @@ public class WelcomeServlet extends HttpServlet {
             out.println("</form>");
         } else {
             out.println("<h3>Please login first!</h3>");
-            request.getRequestDispatcher("login.html").include(request, response);
+            request.getRequestDispatcher("home.html").include(request, response);
         }
     }
 }

@@ -33,7 +33,7 @@ public class FileChooserExample extends Application {
         root.getChildren().addAll(btn, label);
         Scene scene = new Scene(root, 400, 150);
         stage.setScene(scene);
-        stage.setTitle("Simple FileChooser Example");
+        stage.setTitle("Babin's File Chooser");
         stage.show();
     }
 

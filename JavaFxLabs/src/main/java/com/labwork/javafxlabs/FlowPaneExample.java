@@ -27,7 +27,7 @@ public class FlowPaneExample extends Application {
         fp.getChildren().add(b4);
         fp.getChildren().add(l1);
         Scene sc = new Scene(fp,400,400);
-        stage.setTitle("Layout Demo");
+        stage.setTitle("Babin flowPane");
         stage.setScene(sc);
         stage.show();
     }

@@ -11,11 +11,11 @@ public class LabelExample extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         VBox box = new VBox(10);
-        Label label = new Label("Hello Welcome to JavaFx");
+        Label label = new Label("This is a Label");
         box.getChildren().add(label);
         Scene scene = new Scene(box,400,400);
         stage.setScene(scene);
-        stage.setTitle("Label Example");
+        stage.setTitle(" Babin Label Example");
         stage.show();
     }
 

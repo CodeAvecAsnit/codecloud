@@ -15,9 +15,9 @@ public class RadioButtonExample extends Application{
     public void start(Stage stage) throws Exception {
         HBox box = new HBox(10);
 
-        Label label = new Label("Select you gender : ");
-        RadioButton maleButton = new RadioButton("Male");
-        RadioButton femaleButton = new RadioButton("Female");
+        Label label = new Label("Select you Faculty : ");
+        RadioButton maleButton = new RadioButton("CSIT");
+        RadioButton femaleButton = new RadioButton("BCA");
 
         ToggleGroup group = new ToggleGroup();
         maleButton.setToggleGroup(group);
@@ -33,7 +33,7 @@ public class RadioButtonExample extends Application{
         box.getChildren().addAll(label, maleButton,femaleButton);
 
         Scene scene = new Scene(box, 500,300);
-        stage.setTitle("Text Field Example");
+        stage.setTitle("Babin Text Field Example");
         stage.setScene(scene);
         stage.show();
     }

@@ -13,12 +13,12 @@ public class GridPaneExample extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.add(new Button("Grid 0,0"), 0, 0);
-        grid.add(new Button("Grid 1,0"), 1, 0);
-        grid.add(new Button("Grid 0,1"), 0, 1);
-        grid.add(new Button("Grid 1,1"), 1, 1);
+        grid.add(new Button("Grid 1,0"), 1, 1);
+        grid.add(new Button("Grid 0,1"), 0, 3);
+        grid.add(new Button("Grid 1,1"), 1, 3);
         Scene scene = new Scene(grid,500,400);
         stage.setScene(scene);
-        stage.setTitle("Grid Layout");
+        stage.setTitle(" Babin Grid Layout");
         stage.show();
     }
 

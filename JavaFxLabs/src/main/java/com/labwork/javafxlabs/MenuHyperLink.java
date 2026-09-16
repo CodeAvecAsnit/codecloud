@@ -32,7 +32,7 @@ public class MenuHyperLink extends Application {
 
         Scene scene = new Scene(root, 400, 200);
         stage.setScene(scene);
-        stage.setTitle("Menu + Hyperlink + Tooltip Example");
+        stage.setTitle(" Babin Menu + Hyperlink + Tooltip Example");
         stage.show();
     }
 

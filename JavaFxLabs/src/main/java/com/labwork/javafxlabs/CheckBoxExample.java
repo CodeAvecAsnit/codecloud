@@ -11,16 +11,16 @@ public class CheckBoxExample extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         VBox box = new VBox(10);
-        Label label = new Label("Select your hobbies");
-        CheckBox first = new CheckBox("Sports");
-        CheckBox second = new CheckBox("Music");
-        CheckBox third = new CheckBox("Coding");
-        CheckBox fourth = new CheckBox("Designing");
+        Label label = new Label("Select your Country");
+        CheckBox first = new CheckBox("Nepal");
+        CheckBox second = new CheckBox("India");
+        CheckBox third = new CheckBox("China");
+        CheckBox fourth = new CheckBox("USA");
         box.getChildren().add(label);
         box.getChildren().addAll(first,second,third,fourth);
         Scene scene = new Scene(box,400,400);
         stage.setScene(scene);
-        stage.setTitle("Label Example");
+        stage.setTitle("Babin's Checkbox");
         stage.show();
     }
 

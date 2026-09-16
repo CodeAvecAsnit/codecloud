@@ -20,7 +20,7 @@ public class BorderPaneExample extends Application {
         border.setRight(new Button("Right"));
         border.setCenter(new Button("Center"));
         Scene scene = new Scene(border, 500, 600);
-        stage.setTitle("JavaFX Layout Demo");
+        stage.setTitle("Babin Rana BorderPane");
         stage.setScene(scene);
         stage.show();
     }

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            padding: 28px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-connected {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+        .status-connected::before { background-color: var(--success); }
+
+        .status-disconnected {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+        .status-disconnected::before { background-color: var(--danger); }
+
+        .game-banner {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tries-count {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin: 4px 0;
+        }
+
+        .hint-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            min-height: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--accent-color);
+        }
+
+        input[type="number"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-reset {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-reset:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .history-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .history-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-list {
+            list-style: none;
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background-color: rgba(255, 255, 255, 0.02);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item.higher { border-left: 3px solid var(--warning); }
+        .history-item.lower { border-left: 3px solid #3b82f6; }
+        .history-item.correct { border-left: 3px solid var(--success); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1 class="title">Guess Number</h1>
+        <span id="statusBadge" class="status-badge status-disconnected">Disconnected</span>
+    </div>
+
+    <div class="game-banner">
+        <div id="triesDisplay" class="tries-count">7</div>
+        <div id="hintDisplay" class="hint-text">Connecting to server...</div>
+    </div>
+
+    <form id="guessForm" onsubmit="handleGuess(event)">
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input type="number" id="guessInput" min="1" max="100" placeholder="Enter 1 - 100" disabled required>
+                <button type="submit" id="submitBtn" disabled>Guess</button>
+            </div>
+            <div id="validationError" class="error-message">Please enter a valid number between 1 and 100.</div>
+        </div>
+    </form>
+
+    <button type="button" class="btn-reset" onclick="initWebSocket()">🔄 Restart / New Game</button>
+
+    <div class="history-section">
+        <div class="history-title">Guess History</div>
+        <ul id="historyList" class="history-list"></ul>
+    </div>
+</div>
+
+<script>
+    let ws = null;
+    let remainingTries = 7;
+
+    const statusBadge = document.getElementById('statusBadge');
+    const triesDisplay = document.getElementById('triesDisplay');
+    const hintDisplay = document.getElementById('hintDisplay');
+    const guessInput = document.getElementById('guessInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const validationError = document.getElementById('validationError');
+    const historyList = document.getElementById('historyList');
+
+    function initWebSocket() {
+        // Close existing connection if active
+        if (ws) {
+            ws.close();
+        }
+
+        resetUI();
+
+        // Construct WebSocket URL dynamically matching current host
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.host || 'localhost:8080';
+        const wsUrl = `${protocol}//${host}/ws/game`;
+
+        ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+            statusBadge.textContent = 'Connected';
+            statusBadge.className = 'status-badge status-connected';
+            setControlsEnabled(true);
+        };
+
+        ws.onmessage = (event) => {
+            const message = event.data;
+            parseServerMessage(message);
+        };
+
+        ws.onclose = () => {
+            statusBadge.textContent = 'Disconnected';
+            statusBadge.className = 'status-badge status-disconnected';
+            setControlsEnabled(false);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket Error:', error);
+            hintDisplay.textContent = 'Error connecting to WebSocket server.';
+        };
+    }
+
+    function handleGuess(event) {
+        event.preventDefault();
+        validationError.style.display = 'none';
+
+        const rawVal = guessInput.value;
+        const val = parseInt(rawVal, 10);
+
+        // Client-side validation
+        if (isNaN(val) || val < 1 || val > 100) {
+            validationError.style.display = 'block';
+            return;
+        }
+
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(val.toString());
+            guessInput.value = '';
+            guessInput.focus();
+        }
+    }
+
+    function parseServerMessage(message) {
+        hintDisplay.textContent = message;
+
+        // Extract remaining tries using regex
+        const match = message.match(/Tries left:\s*(\d+)/i);
+        if (match) {
+            remainingTries = parseInt(match[1], 10);
+            triesDisplay.textContent = remainingTries;
+        }
+
+        // Detect Game End / Hints
+        if (message.includes('Higher')) {
+            addHistory(guessInput.dataset.lastGuess, 'Higher ⬆️', 'higher');
+        } else if (message.includes('Lower')) {
+            addHistory(guessInput.dataset.lastGuess, 'Lower ⬇️', 'lower');
+        } else if (message.includes('Correct')) {
+            triesDisplay.textContent = '🎉';
+            addHistory(guessInput.dataset.lastGuess, 'Correct! 🏆', 'correct');
+            setControlsEnabled(false);
+        } else if (message.includes('Out of tries')) {
+            triesDisplay.textContent = '💀';
+            setControlsEnabled(false);
+        }
+    }
+
+    // Keep track of submitted guess before clearing field
+    guessInput.addEventListener('input', () => {
+        guessInput.dataset.lastGuess = guessInput.value;
+    });
+
+    function addHistory(guessNum, resultText, typeClass) {
+        if (!guessNum) return;
+        const li = document.createElement('li');
+        li.className = `history-item ${typeClass}`;
+        li.innerHTML = `<span>Guess: <strong>${guessNum}</strong></span> <span>${resultText}</span>`;
+        historyList.prepend(li);
+    }
+
+    function setControlsEnabled(enabled) {
+        guessInput.disabled = !enabled;
+        submitBtn.disabled = !enabled;
+        if (enabled) guessInput.focus();
+    }
+
+    function resetUI() {
+        remainingTries = 7;
+        triesDisplay.textContent = '7';
+        hintDisplay.textContent = 'Connecting...';
+        historyList.innerHTML = '';
+        validationError.style.display = 'none';
+        guessInput.value = '';
+    }
+
+    // Initialize on page load
+    window.onload = initWebSocket;
+</script>
+</body>
+</html>
