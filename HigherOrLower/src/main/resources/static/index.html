@@ -3,200 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Number Guessing Game</title>
+    <title>Higher or Lower</title>
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #6366f1;
-            --accent-hover: #4f46e5;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --border-color: #334155;
+        /* Dynamic Theme State Variables */
+        body.state-playing {
+            --theme-color: #f59e0b; /* Yellow */
+            --theme-glow: rgba(245, 158, 11, 0.35);
+            --theme-bg-glow: rgba(245, 158, 11, 0.08);
+            --theme-bg-translucent: rgba(245, 158, 11, 0.05);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        body.state-success {
+            --theme-color: #00ff7f; /* Green */
+            --theme-glow: rgba(0, 255, 127, 0.35);
+            --theme-bg-glow: rgba(0, 255, 127, 0.08);
+            --theme-bg-translucent: rgba(0, 255, 127, 0.05);
+        }
+
+        body.state-failed {
+            --theme-color: #ff4d4d; /* Red */
+            --theme-glow: rgba(255, 77, 77, 0.35);
+            --theme-bg-glow: rgba(255, 77, 77, 0.08);
+            --theme-bg-translucent: rgba(255, 77, 77, 0.05);
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: #14141e;
+            color: #ffffff;
+            font-family: 'Space Mono', monospace;
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 450px;
-            padding: 28px;
-        }
-
-        .header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            flex-direction: column;
+            transition: all 0.3s ease;
         }
 
-        .title {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-badge::before {
+        /* Background grid overlay */
+        body::before {
             content: '';
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #14141e;
+            z-index: -2;
         }
 
-        .status-connected {
-            background-color: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-        }
-        .status-connected::before { background-color: var(--success); }
-
-        .status-disconnected {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-        }
-        .status-disconnected::before { background-color: var(--danger); }
-
-        .game-banner {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 20px;
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0px, transparent 1px, transparent 32px, rgba(255, 255, 255, 0.03) 33px),
+                    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0px, transparent 1px, transparent 32px, rgba(255, 255, 255, 0.03) 33px);
+            z-index: -1;
         }
 
-        .tries-count {
+        /* Navigation */
+        .navbar {
+            background-color: rgba(35, 35, 50, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--theme-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-family: 'Marcellus', serif;
+            font-size: 1.5rem;
+            color: var(--theme-color) !important;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--theme-glow);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* Game Card Container */
+        .game-container {
+            background: rgba(35, 35, 50, 0.8);
+            border: 2px solid var(--theme-color);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px var(--theme-glow);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            margin: 2rem auto;
+            max-width: 550px;
+            width: 100%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .game-title {
+            font-family: 'Marcellus', serif;
             font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--accent-color);
-            margin: 4px 0;
+            color: var(--theme-color);
+            text-shadow: 0 0 15px var(--theme-glow);
+            margin-bottom: 0.5rem;
+            text-align: center;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
         }
 
-        .hint-text {
-            color: var(--text-muted);
+        /* Displays */
+        .display-box {
+            background: var(--theme-bg-translucent);
+            border: 2px solid var(--theme-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 20px var(--theme-glow);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+
+        .tries-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--theme-color);
+            text-shadow: 0 0 10px var(--theme-glow);
+            line-height: 1;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .tries-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .hint-banner {
+            background: var(--theme-bg-glow);
+            border: 1px solid var(--theme-glow);
+            border-left: 4px solid var(--theme-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
             font-size: 0.95rem;
-            min-height: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .input-wrapper {
+            color: rgba(255, 255, 255, 0.9);
+            min-height: 52px;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
         }
 
-        input[type="number"] {
-            flex: 1;
-            background-color: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: #fff;
-            font-size: 1rem;
+        /* Form & Buttons */
+        .game-input {
+            background-color: #14141e !important;
+            border: 2px solid var(--theme-glow) !important;
+            color: var(--theme-color) !important;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 8px 0 0 8px !important;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .game-input:focus {
+            box-shadow: 0 0 15px var(--theme-glow) !important;
+            border-color: var(--theme-color) !important;
             outline: none;
-            transition: border-color 0.2s;
         }
 
-        input[type="number"]:focus {
-            border-color: var(--accent-color);
-        }
-
-        input[type="number"]:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        button {
-            background-color: var(--accent-color);
-            color: white;
+        .btn-action {
+            background: var(--theme-color);
             border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
+            color: #14141e;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--theme-glow);
+            font-family: 'Space Mono', monospace;
         }
 
-        button:hover:not(:disabled) {
-            background-color: var(--accent-hover);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn-action:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--theme-glow);
+            color: #14141e;
         }
 
         .btn-reset {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid var(--theme-color);
+            color: var(--theme-color);
+            font-weight: 700;
             width: 100%;
-            margin-top: 10px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Space Mono', monospace;
         }
 
-        .btn-reset:hover:not(:disabled) {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #fff;
+        .btn-reset:hover {
+            background: var(--theme-bg-glow);
+            box-shadow: 0 0 15px var(--theme-glow);
+            color: #ffffff;
         }
 
-        .error-message {
-            color: var(--danger);
-            font-size: 0.85rem;
-            margin-top: 6px;
-            display: none;
+        /* History Panel */
+        .history-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--theme-glow);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            transition: border-color 0.3s ease;
         }
 
-        .history-section {
-            margin-top: 20px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 16px;
-        }
-
-        .history-title {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .history-header {
+            font-family: 'Marcellus', serif;
+            color: var(--theme-color);
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid var(--theme-glow);
+            padding-bottom: 0.4rem;
+            transition: color 0.3s ease, border-color 0.3s ease;
         }
 
         .history-list {
             list-style: none;
-            max-height: 150px;
+            padding: 0;
+            margin: 0;
+            max-height: 160px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -204,56 +244,92 @@
         }
 
         .history-item {
-            background-color: rgba(255, 255, 255, 0.02);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--theme-color);
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
-        .history-item.higher { border-left: 3px solid var(--warning); }
-        .history-item.lower { border-left: 3px solid #3b82f6; }
-        .history-item.correct { border-left: 3px solid var(--success); }
+        .history-item.higher { border-left-color: #f59e0b; }
+        .history-item.lower { border-left-color: #3b82f6; }
+        .history-item.correct { border-left-color: #00ff7f; background: rgba(0, 255, 127, 0.1); }
+
+        .error-text {
+            color: #ff4d4d;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            display: none;
+        }
+
+        footer {
+            background: rgba(20, 20, 30, 0.8);
+            border-top: 2px solid var(--theme-color);
+            margin-top: auto;
+            padding: 1.5rem 0;
+            transition: border-color 0.3s ease;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            font-size: 0.85rem;
+        }
     </style>
 </head>
-<body>
+<body class="state-playing">
 
-<div class="container">
-    <div class="header">
-        <h1 class="title">Guess Number</h1>
-        <span id="statusBadge" class="status-badge status-disconnected">Disconnected</span>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="#">HIGHER OR LOWER</a>
     </div>
+</nav>
 
-    <div class="game-banner">
-        <div id="triesDisplay" class="tries-count">7</div>
-        <div id="hintDisplay" class="hint-text">Connecting to server...</div>
-    </div>
+<main class="container d-flex align-items-center flex-grow-1">
+    <div class="game-container">
+        <h1 class="game-title">HIGHER OR LOWER</h1>
+        <p class="text-center text-white-50 small mb-0">System picks a number between 1 & 100</p>
 
-    <form id="guessForm" onsubmit="handleGuess(event)">
-        <div class="form-group">
-            <div class="input-wrapper">
-                <input type="number" id="guessInput" min="1" max="100" placeholder="Enter 1 - 100" disabled required>
-                <button type="submit" id="submitBtn" disabled>Guess</button>
-            </div>
-            <div id="validationError" class="error-message">Please enter a valid number between 1 and 100.</div>
+        <div class="display-box">
+            <div id="triesDisplay" class="tries-number">7</div>
+            <div class="tries-label">Tries Remaining</div>
         </div>
-    </form>
 
-    <button type="button" class="btn-reset" onclick="initWebSocket()">🔄 Restart / New Game</button>
+        <div id="hintDisplay" class="hint-banner">
+            Establishing WebSocket connection...
+        </div>
 
-    <div class="history-section">
-        <div class="history-title">Guess History</div>
-        <ul id="historyList" class="history-list"></ul>
+        <form id="guessForm" onsubmit="handleGuess(event)">
+            <div class="input-group">
+                <input type="number" id="guessInput" class="form-control game-input" min="1" max="100" placeholder="1-100" disabled required>
+                <button type="submit" id="submitBtn" class="btn btn-action" disabled>GUESS</button>
+            </div>
+            <div id="validationError" class="error-text">Please enter an integer between 1 and 100.</div>
+        </form>
+
+        <button type="button" class="btn btn-reset" onclick="initWebSocket()">
+            RESTART
+        </button>
+
+        <div class="history-box">
+            <div class="history-header">ATTEMPT LOG</div>
+            <ul id="historyList" class="history-list"></ul>
+        </div>
     </div>
-</div>
+</main>
+
+<footer>
+    <div class="container text-center">
+        <p>© 2026 CodeAvecAsnit. WebSocket Realtime Protocol.</p>
+    </div>
+</footer>
 
 <script>
     let ws = null;
-    let remainingTries = 7;
+    let lastEnteredGuess = null;
 
-    const statusBadge = document.getElementById('statusBadge');
     const triesDisplay = document.getElementById('triesDisplay');
     const hintDisplay = document.getElementById('hintDisplay');
     const guessInput = document.getElementById('guessInput');
@@ -262,40 +338,35 @@
     const historyList = document.getElementById('historyList');
 
     function initWebSocket() {
-        // Close existing connection if active
         if (ws) {
             ws.close();
         }
 
         resetUI();
 
-        // Construct WebSocket URL dynamically matching current host
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host || 'localhost:8080';
-        const wsUrl = `${protocol}//${host}/ws/game`;
+        // const wsUrl = `${protocol}//${host}/ws/game`;
+        const wsUrl = `wss://imageprocessing-l72l.onrender.com/ws/game`;
 
         ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
-            statusBadge.textContent = 'Connected';
-            statusBadge.className = 'status-badge status-connected';
             setControlsEnabled(true);
         };
 
         ws.onmessage = (event) => {
-            const message = event.data;
-            parseServerMessage(message);
+            parseServerMessage(event.data);
         };
 
         ws.onclose = () => {
-            statusBadge.textContent = 'Disconnected';
-            statusBadge.className = 'status-badge status-disconnected';
             setControlsEnabled(false);
         };
 
         ws.onerror = (error) => {
             console.error('WebSocket Error:', error);
-            hintDisplay.textContent = 'Error connecting to WebSocket server.';
+            hintDisplay.textContent = 'Error: Cannot connect to game service.';
+            document.body.className = 'state-failed';
         };
     }
 
@@ -303,16 +374,16 @@
         event.preventDefault();
         validationError.style.display = 'none';
 
-        const rawVal = guessInput.value;
+        const rawVal = guessInput.value.trim();
         const val = parseInt(rawVal, 10);
 
-        // Client-side validation
         if (isNaN(val) || val < 1 || val > 100) {
             validationError.style.display = 'block';
             return;
         }
 
         if (ws && ws.readyState === WebSocket.OPEN) {
+            lastEnteredGuess = val;
             ws.send(val.toString());
             guessInput.value = '';
             guessInput.focus();
@@ -322,38 +393,32 @@
     function parseServerMessage(message) {
         hintDisplay.textContent = message;
 
-        // Extract remaining tries using regex
         const match = message.match(/Tries left:\s*(\d+)/i);
         if (match) {
-            remainingTries = parseInt(match[1], 10);
-            triesDisplay.textContent = remainingTries;
+            triesDisplay.textContent = match[1];
         }
 
-        // Detect Game End / Hints
         if (message.includes('Higher')) {
-            addHistory(guessInput.dataset.lastGuess, 'Higher ⬆️', 'higher');
+            addHistory(lastEnteredGuess, 'HIGHER', 'higher');
         } else if (message.includes('Lower')) {
-            addHistory(guessInput.dataset.lastGuess, 'Lower ⬇️', 'lower');
+            addHistory(lastEnteredGuess, 'LOWER', 'lower');
         } else if (message.includes('Correct')) {
-            triesDisplay.textContent = '🎉';
-            addHistory(guessInput.dataset.lastGuess, 'Correct! 🏆', 'correct');
+            triesDisplay.textContent = 'WIN';
+            addHistory(lastEnteredGuess, 'CORRECT', 'correct');
+            document.body.className = 'state-success';
             setControlsEnabled(false);
         } else if (message.includes('Out of tries')) {
-            triesDisplay.textContent = '💀';
+            triesDisplay.textContent = 'END';
+            document.body.className = 'state-failed';
             setControlsEnabled(false);
         }
     }
-
-    // Keep track of submitted guess before clearing field
-    guessInput.addEventListener('input', () => {
-        guessInput.dataset.lastGuess = guessInput.value;
-    });
 
     function addHistory(guessNum, resultText, typeClass) {
         if (!guessNum) return;
         const li = document.createElement('li');
         li.className = `history-item ${typeClass}`;
-        li.innerHTML = `<span>Guess: <strong>${guessNum}</strong></span> <span>${resultText}</span>`;
+        li.innerHTML = `<span>GUESS: <strong>${guessNum}</strong></span> <span>${resultText}</span>`;
         historyList.prepend(li);
     }
 
@@ -364,16 +429,18 @@
     }
 
     function resetUI() {
-        remainingTries = 7;
+        document.body.className = 'state-playing';
         triesDisplay.textContent = '7';
         hintDisplay.textContent = 'Connecting...';
         historyList.innerHTML = '';
         validationError.style.display = 'none';
         guessInput.value = '';
+        lastEnteredGuess = null;
     }
 
-    // Initialize on page load
     window.onload = initWebSocket;
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>
 </html>
